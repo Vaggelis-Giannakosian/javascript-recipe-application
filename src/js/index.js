@@ -1,31 +1,40 @@
 // Global app controller
-import axios from 'axios';
+import Search from './models/Search';
+import * as searchView from './views/searchView';
+import {elements} from './views/base';
 
+/**Global state of the app
+ * -Search Obj
+ * - Current recipe Obj
+ * - Shopping list obj
+ * - Like recipes
+ */
+const state = {};
 
-
-async function getSearchResults(query){
-    try{
-        const apikey = '2ec09e810b36264ea8925d913c1a2ac8';
-        const result =await axios(`https://www.food2fork.com/api/search?key=${apikey}&q=${query}`);
-        const recipes = result.data.recipes;
-        console.log(recipes);
-    }catch (e) {
-        alert(e);
+const controlSearch = async () => {
+    //1) get query from the view
+    const query = searchView.getInput();
+    //2)
+    if(query){
+        state.search = new Search(query);
     }
-}
+    //3) prepare the view for the results
+    searchView.clearInput();
+    searchView.clearSearchList();
+    //4) search for recipes
+    await state.search.getSearchResults();
+    //5 render the results on the UI
+    searchView.renderResults(state.search.result);
+};
+
+elements.searchForm.addEventListener('submit', e => {
+       e.preventDefault();
+        controlSearch();
+   });
 
 
-// getSearchResults('burger');
 
 
-async function getRecipe(id){
-    try{
-        const apikey = '2ec09e810b36264ea8925d913c1a2ac8';
-        const recipe =await axios(`https://www.food2fork.com/api/get?key=${apikey}&rId=${id}`);
-        console.log(recipe);
-    }catch (e) {
-        alert(e)
-    }
-}
 
-// getRecipe(16553);
+
+

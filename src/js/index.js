@@ -2,6 +2,7 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe';
 import * as searchView from './views/searchView';
+import * as recipeView from './views/recipeView.js';
 import {elements,renderLoader,removeLoader,elementStrings} from './views/base';
 
 /**Global state of the app
@@ -25,10 +26,15 @@ const controlSearch = async () => {
     searchView.clearSearchList();
     renderLoader(elements.searchResults);
     //4) search for recipes
-    await state.search.getSearchResults();
-    //5 render the results on the UI
-    removeLoader();
-    searchView.renderResults(state.search.result);
+    try{
+        await state.search.getSearchResults();
+        //5 render the results on the UI
+        removeLoader();
+        searchView.renderResults(state.search.result);
+    }catch (e) {
+        removeLoader();
+        console.log(e);
+    }
 };
 
 elements.searchForm.addEventListener('submit', e => {
@@ -46,18 +52,34 @@ elements.searchResPages.addEventListener('click', e => {
 });
 
 
-const controlRecipe = recipeId => {
-    const recipe = new Recipe(recipeId);
-    recipe.getRecipe();
+const controlRecipe = async () => {
+    //get the Id from the url
+   const recipeId = window.location.hash.replace('#','');
+   //prepare the ui for changes
+    recipeView.clearRecipePage();
+   if(recipeId){
+       renderLoader(elements.recipePage);
+       //create new recipe obj
+       state.recipe = new Recipe(recipeId);
+       try{
+           //get recipe data and parse ingredients
+           await state.recipe.getRecipe();
+           state.recipe.parseIngredients();
+           // calculate servings and time
+           state.recipe.calcServings();
+           state.recipe.calcTime();
+           //render the recipe
+           removeLoader();
+           recipeView.renderRecipe(state.recipe);
+       }catch (e) {
+           removeLoader();
+           console.log(e);
+       }
+   }
 };
 
 //RECIPE CONTROLLER
-elements.searchList.addEventListener('click', e =>{
-    e.preventDefault();
-    const recipe = e.target.closest('.results__link');
-    const recipeId = recipe.href.split('/').pop();
-    controlRecipe(recipeId);
-});
+['hashchange','load'].forEach(event => window.addEventListener(event,controlRecipe));
 
 
 

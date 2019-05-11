@@ -5,6 +5,8 @@ import List from './models/List.js';
 
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView.js';
+import * as listView from './views/listView.js';
+
 import {elements,renderLoader,removeLoader,elementStrings} from './views/base';
 
 /**Global state of the app
@@ -110,10 +112,13 @@ elements.recipePage.addEventListener('click',e => {
 
 const controlList = () => {
     const list = new List();
-    state.recipe.ingredients.forEach(el=> list.addNewItem(el));
-    console.log(list);
-};
+    state.recipe.ingredients.forEach(el=> list.addNewItem(el.count,el.unit,el.ingredient));
+    list.items.forEach(el =>{
 
+        listView.renderItem(el);
+    } );
+
+};
 
 elements.recipePage.addEventListener('click',e=>{
     if(e.target.matches('.recipe__btn,.recipe__btn *')) controlList();

@@ -1,6 +1,7 @@
 import {elements} from "./base";
 
 export const renderItem = item => {
+
     const markup = `
     <li class="shopping__item">
                     <div class="shopping__count" data-itemid="${item.id}">

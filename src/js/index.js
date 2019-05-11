@@ -1,6 +1,8 @@
 // Global app controller
 import Search from './models/Search';
 import Recipe from './models/Recipe';
+import List from './models/List.js';
+
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView.js';
 import {elements,renderLoader,removeLoader,elementStrings} from './views/base';
@@ -52,9 +54,7 @@ elements.searchResPages.addEventListener('click', e => {
 });
 
 
-// elements.
-
-
+//RECIPE CONTROLLER
 const controlRecipe = async () => {
     //get the Id from the url
    const recipeId = window.location.hash.replace('#','');
@@ -105,6 +105,20 @@ elements.recipePage.addEventListener('click',e => {
 
     recipeView.updateIngredients(state.recipe);
 });
+
+//Shopping List Controller
+
+const controlList = () => {
+    const list = new List();
+    state.recipe.ingredients.forEach(el=> list.addNewItem(el));
+    console.log(list);
+};
+
+
+elements.recipePage.addEventListener('click',e=>{
+    if(e.target.matches('.recipe__btn,.recipe__btn *')) controlList();
+});
+
 
 
 

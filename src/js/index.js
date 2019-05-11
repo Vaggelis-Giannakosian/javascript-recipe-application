@@ -52,6 +52,9 @@ elements.searchResPages.addEventListener('click', e => {
 });
 
 
+// elements.
+
+
 const controlRecipe = async () => {
     //get the Id from the url
    const recipeId = window.location.hash.replace('#','');
@@ -59,6 +62,10 @@ const controlRecipe = async () => {
     recipeView.clearRecipePage();
    if(recipeId){
        renderLoader(elements.recipePage);
+
+       //highlight selected
+       if(state.search)searchView.highlightSelected(recipeId);
+
        //create new recipe obj
        state.recipe = new Recipe(recipeId);
        try{
@@ -76,12 +83,28 @@ const controlRecipe = async () => {
            console.log(e);
        }
    }
+
+
+
 };
 
 //RECIPE CONTROLLER
 ['hashchange','load'].forEach(event => window.addEventListener(event,controlRecipe));
 
+//handling recipe servings clicks
+elements.recipePage.addEventListener('click',e => {
+    let type;
+    if(e.target.matches('.btn-decrease,.btn-decrease *')){
+        //decrease button is clicked
+        if(state.recipe.servings>1){
+            state.recipe.updateServings('dec');
+        }
+    }else if(e.target.matches('.btn-increase,.btn-increase *')){
+        state.recipe.updateServings('inc');
+    }
 
+    recipeView.updateIngredients(state.recipe);
+});
 
 
 

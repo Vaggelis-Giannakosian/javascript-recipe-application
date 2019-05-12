@@ -171,7 +171,7 @@ const controlLike = () => {
 
     likesView.toggleLikeMenu(state.likes.getNumLikes());
 };
-window.s = state;
+
 //Restore liked recipes on page load.
 window.addEventListener('load', () => {
     state.likes = new Like();

@@ -7,6 +7,7 @@ import Like from './models/Like.js';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView.js';
 import * as listView from './views/listView.js';
+import * as likesView from './views/likesView.js';
 
 import {elements,renderLoader,removeLoader,elementStrings} from './views/base';
 
@@ -80,7 +81,7 @@ const controlRecipe = async () => {
            state.recipe.calcTime();
            //render the recipe
            removeLoader();
-           recipeView.renderRecipe(state.recipe);
+           recipeView.renderRecipe(state.recipe,state.likes.isLiked(recipeId));
        }catch (e) {
            removeLoader();
            console.log(e);
@@ -142,7 +143,11 @@ elements.shoppingList.addEventListener('click',e=>{
     }
 });
 
-//Like Controller
+//Likes Controller
+
+//for testing purposes
+
+
 const controlLike = () => {
    if(!state.likes) state.likes = new Like();
    const currentId = state.recipe.id;
@@ -151,18 +156,31 @@ const controlLike = () => {
        //add like to state obj
        const like = state.likes.addItem(state.recipe.id, state.recipe.title, state.recipe.author, state.recipe.img);
        //toggle like button
-
+       likesView.toggleLikeButton(true);
        //add like to UI list
-       console.log(state.likes);
+        likesView.addLikeItem(like);
        //liked recipe
    }else {
        //remove like from state obj
-
-       //toggle like button
-
-       //remove like from UI list
        state.likes.deleteItem(currentId);
-       console.log(state.likes);
+       //toggle like button
+       likesView.toggleLikeButton(false);
+       //remove like from UI list
+       likesView.removeLikeItem(currentId);
    }
 
+    likesView.toggleLikeMenu(state.likes.getNumLikes());
 };
+window.s = state;
+//Restore liked recipes on page load.
+window.addEventListener('load', () => {
+    state.likes = new Like();
+    //restore likes
+    state.likes.readStorage();
+
+    //toggle like menu button
+    likesView.toggleLikeMenu(state.likes.getNumLikes());
+
+    //render existing likes
+    state.likes.liked.forEach(el=>likesView.addLikeItem(el));
+});

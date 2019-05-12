@@ -2,6 +2,7 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe';
 import List from './models/List.js';
+import Like from './models/Like.js';
 
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView.js';
@@ -93,7 +94,7 @@ const controlRecipe = async () => {
 //RECIPE CONTROLLER
 ['hashchange','load'].forEach(event => window.addEventListener(event,controlRecipe));
 
-//handling recipe servings clicks
+//handling recipe  clicks
 elements.recipePage.addEventListener('click',e => {
     let type;
     if(e.target.matches('.btn-decrease,.btn-decrease *')){
@@ -107,6 +108,8 @@ elements.recipePage.addEventListener('click',e => {
         recipeView.updateIngredients(state.recipe);
     }else if(e.target.matches('.recipe__btn--add,.recipe__btn--add *')){
         controlList();
+    }else if(e.target.matches('.recipe__love , .recipe__love *')){
+        controlLike();
     }
 
 });
@@ -125,8 +128,6 @@ const controlList = () => {
  };
 
 //Handle delete and update list item events
-
-
 elements.shoppingList.addEventListener('click',e=>{
     const id =  e.target.closest('.shopping__item').dataset.itemid;
     if(e.target.matches('.shopping__delete,.shopping__delete *')) {
@@ -141,4 +142,27 @@ elements.shoppingList.addEventListener('click',e=>{
     }
 });
 
-window.s = state;
+//Like Controller
+const controlLike = () => {
+   if(!state.likes) state.likes = new Like();
+   const currentId = state.recipe.id;
+   //not liked recipe
+   if(!state.likes.isLiked(currentId)){
+       //add like to state obj
+       const like = state.likes.addItem(state.recipe.id, state.recipe.title, state.recipe.author, state.recipe.img);
+       //toggle like button
+
+       //add like to UI list
+       console.log(state.likes);
+       //liked recipe
+   }else {
+       //remove like from state obj
+
+       //toggle like button
+
+       //remove like from UI list
+       state.likes.deleteItem(currentId);
+       console.log(state.likes);
+   }
+
+};
